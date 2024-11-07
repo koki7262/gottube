@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube動画再生ページ</title>
+</head>
+<body>
+
+    <h2>YouTube動画再生ページ</h2>
+    <!-- 動画のURLを入力するテキストボックス -->
+    <input type="text" id="youtube-url" placeholder="YouTube動画のURLを入力してください" value="https://www.youtube.com/watch?v=xyFyDxGn_Po">
+    <!-- 動画再生ボタン -->
+    <button id="play-button">再生</button>
+    
+    <!-- エラーメッセージを表示する領域 -->
+    <p id="error-message" style="color: red;"></p>
+
+    <h3>デフォルト動画</h3>
+    <!-- デフォルト動画を表示する領域 -->
+    <div style="margin-top:20px;">
+        <iframe id="default-player" width="560" height="315" 
+                src="https://www.youtube.com/embed/xyFyDxGn_Po" 
+                frameborder="0" allow="autoplay; encrypted-media" 
+                allowfullscreen></iframe>
+    </div>
+
+    <h3>入力したURLの動画</h3>
+    <!-- 入力されたURLの動画を表示する領域 -->
+    <div style="margin-top:20px;">
+        <iframe id="youtube-player" width="560" height="315" 
+                src="" 
+                frameborder="0" allow="autoplay; encrypted-media" 
+                allowfullscreen></iframe>
+    </div>
+
+    <script>
+        // 再生ボタンのイベントリスナーを設定
+        document.getElementById("play-button").addEventListener("click", playVideo);
+
+        function playVideo() {
+            // エラーメッセージを初期化
+            const errorMessageElement = document.getElementById('error-message');
+            errorMessageElement.textContent = "";  // 前のエラーメッセージを消す
+
+            try {
+                // 入力されたURLを取得
+                const urlInput = document.getElementById('youtube-url').value;
+
+                // 入力が空の場合
+                if (!urlInput) {
+                    errorMessageElement.textContent = "URLを入力してください。";
+                    return;
+                }
+
+                // URLから動画IDを抽出する
+                let videoId = "";
+                if (urlInput.includes("v=")) {
+                    videoId = urlInput.split('v=')[1].split('&')[0];  // "&"以降を無視
+                } else if (urlInput.includes("youtu.be/")) {
+                    videoId = urlInput.split('youtu.be/')[1].split('?')[0];  // youtu.be形式のリンクにも対応
+                } else {
+                    errorMessageElement.textContent = "正しいYouTubeのURLを入力してください。";
+                    return;
+                }
+
+                // 抽出した動画IDをiframeのsrcに反映して動画を表示
+                const player = document.getElementById('youtube-player');
+                player.src = `https://www.youtube.com/embed/${videoId}`;
+
+                // 動画が再生されたことを確認するメッセージを表示
+                errorMessageElement.textContent = "動画を再生中です。";
+            } catch (error) {
+                // その他のエラーが発生した場合
+                errorMessageElement.textContent = `エラーが発生しました: ${error.message}`;
+            }
+        }
+    </script>
+
+    <noscript>
+        <p style="color: red;">このページではJavaScriptが必要です。ブラウザの設定でJavaScriptを有効にしてください。</p>
+    </noscript>
+
+</body>
+</html>
